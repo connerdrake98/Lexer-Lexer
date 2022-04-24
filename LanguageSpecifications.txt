@@ -1,0 +1,13 @@
+program -> data printInstructions
+
+data -> num || num COMMA data
+printInstructions -> PRINT_MEAN || PRINT_MEDIAN || PRINT_MODE || PRINT_MEAN printInstructions || PRINT_MEDIAN printInstructions || PRINT_MODE printInstructions
+
+num -> ZERO || ZERO num || ONE || ONE num || TWO || TWO num || THREE || THREE num || FOUR || FOUR num || FIVE || FIVE num || SIX || SIX num || SEVEN || SEVEN num || EIGHT || EIGHT num || NINE || NINE num
+
+
+
+PRINT_MEAN = "printMean"
+PRINT_MEDIAN = "printMedian"
+PRINT_MODE = "printMode"
+COMMA = ","
