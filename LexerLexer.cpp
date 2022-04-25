@@ -21,7 +21,7 @@ LexerLexer::~LexerLexer()
 {
 }
 
-void clearLexLanguageSpecificationsMemory(vector<string> *undefinedPlaceholders, vector<string> *undefinedTokens, vector<string> *definedPlaceholders, vector<string> *definedTokens)
+void LexerLexer::clearLexLanguageSpecificationsMemory(vector<string> *undefinedPlaceholders, vector<string> *undefinedTokens, vector<string> *definedPlaceholders, vector<string> *definedTokens)
 {
     delete undefinedPlaceholders;
     undefinedPlaceholders = NULL;
@@ -38,6 +38,7 @@ void clearLexLanguageSpecificationsMemory(vector<string> *undefinedPlaceholders,
 
 int LexerLexer::lexLanguageSpecifications()
 {
+
     // define strategy scripting rules based on LanguageRules.txt
     vector<string> *undefinedPlaceholders = new vector<string>;
     vector<string> *undefinedTokens = new vector<string>;
@@ -61,6 +62,8 @@ int LexerLexer::lexLanguageSpecifications()
         clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
         return -1;
     }
+
+    
 
     // parse placeholder specifications
     while (getline(fs, currentLine) && (isPlaceholder(currentLine.substr(0, getIndexEndFirstWord(currentLine))) || containsNothing(currentLine)))
@@ -313,6 +316,6 @@ int LexerLexer::lexLanguageSpecifications()
     testPrintVector(definedTokens, "defined tokens");
 
     clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
-
+    
     return 0;
 }
