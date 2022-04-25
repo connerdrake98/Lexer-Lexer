@@ -139,7 +139,7 @@ int LexerLexer::lexLanguageSpecifications()
                             }
                             if (prevWord == orSymbol)
                             {
-                                cout << "Error: a terminal or non-terminal must come after the " << orSymbol << " symbol." << endl;
+                                cout << "Error: A terminal or non-terminal must come after the " << orSymbol << " symbol." << endl;
 
                                 clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                                 return -5;
@@ -174,7 +174,7 @@ int LexerLexer::lexLanguageSpecifications()
             // add non-terminal that was just defined to defined non-terminal list
             if (!addIfDoesNotContain(definedNonTerminals, currentFirstWord))
             {
-                cout << "Error: Defined non-terminal " << currentFirstWord << ", which was previously defined." << endl;
+                cout << "Error: non-terminal " << currentFirstWord << "was already defined." << endl;
 
                 clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                 return -7;
@@ -234,7 +234,7 @@ int LexerLexer::lexLanguageSpecifications()
                 {
                     if (currentWord != terminalValueAssignmentSymbol)
                     {
-                        cout << "Error: Language Specifications must use an equals sign (=) to assign a value to a terminal." << endl;
+                        cout << "Error: Language Specifications must use a " << terminalValueAssignmentSymbol << " to assign a value to a terminal." << endl;
 
                         clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                         return -10;
@@ -252,7 +252,7 @@ int LexerLexer::lexLanguageSpecifications()
                 }
                 else if (wordIndex == 3)
                 {
-                    cout << "Error: Terminal Definitions should take the format of [Terminal_ID] = \"Value\"." << endl;
+                    cout << "Error: Terminal definitions should take the format of [Terminal_ID] = \"Value\"." << endl;
 
                     clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                     return -11;
@@ -289,7 +289,7 @@ int LexerLexer::lexLanguageSpecifications()
 
     if (undefinedNonTerminals->size() > 0)
     {
-        cout << "Error: Finished Lexing Language Specifications After Non-Terminal Definitions and Found Undefined Non-Terminals: " << endl;
+        cout << "Error: Finished lexing language specifications after non-terminal definitions and gound undefined non-terminals: " << endl;
 
         for (int i = 0; i < undefinedNonTerminals->size(); i++)
         {
@@ -301,7 +301,7 @@ int LexerLexer::lexLanguageSpecifications()
     }
     if (undefinedTerminals->size() > 0)
     {
-        cout << "Error: Undefined Terminals: " << endl;
+        cout << "Error: Undefined terminals: " << endl;
 
         for (int i = 0; i < undefinedTerminals->size(); i++)
         {
