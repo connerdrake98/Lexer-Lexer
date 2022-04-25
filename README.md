@@ -13,3 +13,6 @@ Declaring production rules for non-terminal symbols:
 
 Declaring production rules for terminal symbols:
 [Terminal Symbol] = "[Terminal, i.e. string identifier of token]"
+
+Output Notes:
+The program will go through your production rules line-by-line, commenting on which non-terminals and terminals are defined. It will list each line of your production rules and comment on which terminals and non-terminals have not been defined so far, letting you diagnose any problems.
