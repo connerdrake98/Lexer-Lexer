@@ -289,7 +289,7 @@ int LexerLexer::lexLanguageSpecifications()
 
     if (undefinedPlaceholders->size() > 0)
     {
-        cout << "Error: Undefined Placeholders: " << endl;
+        cout << "Error: Lexer Got Last Token Definition and Found Undefined Token Placeholders: " << endl;
 
         for (int i = 0; i < undefinedPlaceholders->size(); i++)
         {
