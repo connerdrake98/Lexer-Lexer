@@ -6,44 +6,44 @@
 LexerLexer::LexerLexer()
 {
     orSymbol = "0";
-    placeholderExpansionSymbol = "0";
-    tokenIDAssignmentSymbol = "0";
+    nonTerminalExpansionSymbol = "0";
+    terminalValueAssignmentSymbol = "0";
 }
 
-LexerLexer::LexerLexer(const string OR_SYMBOL_IN, const string PLACEHOLDER_EXPANSION_SYMBOL_IN, const string TOKEN_ID_ASSIGNMENT_SYMBOL_IN)
+LexerLexer::LexerLexer(const string OR_SYMBOL_IN, const string NON_TERMINAL_EXPANSION_SYMBOL_IN, const string TERMINAL_VALUE_ASSIGNMENT_SYMBOL_IN)
 {
     orSymbol = OR_SYMBOL_IN;
-    placeholderExpansionSymbol = PLACEHOLDER_EXPANSION_SYMBOL_IN;
-    tokenIDAssignmentSymbol = TOKEN_ID_ASSIGNMENT_SYMBOL_IN;
+    nonTerminalExpansionSymbol = NON_TERMINAL_EXPANSION_SYMBOL_IN;
+    terminalValueAssignmentSymbol = TERMINAL_VALUE_ASSIGNMENT_SYMBOL_IN;
 }
 
 LexerLexer::~LexerLexer()
 {
 }
 
-void LexerLexer::clearLexLanguageSpecificationsMemory(vector<string> *undefinedPlaceholders, vector<string> *undefinedTokens, vector<string> *definedPlaceholders, vector<string> *definedTokens)
+void LexerLexer::clearLexLanguageSpecificationsMemory(vector<string> *undefinedNonTerminals, vector<string> *undefinedTerminals, vector<string> *definedNonTerminals, vector<string> *definedTerminals)
 {
-    delete undefinedPlaceholders;
-    undefinedPlaceholders = NULL;
+    delete undefinedNonTerminals;
+    undefinedNonTerminals = NULL;
 
-    delete undefinedTokens;
-    undefinedTokens = NULL;
+    delete undefinedTerminals;
+    undefinedTerminals = NULL;
 
-    delete definedPlaceholders;
-    definedPlaceholders = NULL;
+    delete definedNonTerminals;
+    definedNonTerminals = NULL;
 
-    delete definedTokens;
-    definedTokens = NULL;
+    delete definedTerminals;
+    definedTerminals = NULL;
 }
 
 int LexerLexer::lexLanguageSpecifications()
 {
 
     // define strategy scripting rules based on LanguageRules.txt
-    vector<string> *undefinedPlaceholders = new vector<string>;
-    vector<string> *undefinedTokens = new vector<string>;
-    vector<string> *definedPlaceholders = new vector<string>;
-    vector<string> *definedTokens = new vector<string>;
+    vector<string> *undefinedNonTerminals = new vector<string>;
+    vector<string> *undefinedTerminals = new vector<string>;
+    vector<string> *definedNonTerminals = new vector<string>;
+    vector<string> *definedTerminals = new vector<string>;
     stringstream getWord;
     string currentWord;
     string currentLine;
@@ -59,16 +59,16 @@ int LexerLexer::lexLanguageSpecifications()
     {
         cout << "Error: LanguageSpecifications.txt file not found..." << endl;
 
-        clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+        clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
         return -1;
     }
 
     
 
-    // parse placeholder specifications
-    while (getline(fs, currentLine) && (isPlaceholder(currentLine.substr(0, getIndexEndFirstWord(currentLine))) || containsNothing(currentLine)))
+    // parse non-terminal specifications
+    while (getline(fs, currentLine) && (isNonTerminal(currentLine.substr(0, getIndexEndFirstWord(currentLine))) || containsNothing(currentLine)))
     {
-        testPrintVector(undefinedPlaceholders, "undefined placeholders");
+        testPrintVector(undefinedNonTerminals, "undefined non-terminals");
         currentFirstWordNeedsToBeDefined = false;
         getWord.clear();
 
@@ -87,19 +87,19 @@ int LexerLexer::lexLanguageSpecifications()
                 {
                     if (nonWhitespaceLineIndex != 1)
                     {
-                        // Determine if this placeholder is on the undefined placeholders list
-                        for (int i = 0; i < undefinedPlaceholders->size(); i++)
+                        // Determine if this non-terminal is on the undefined non-terminals list
+                        for (int i = 0; i < undefinedNonTerminals->size(); i++)
                         {
-                            if (undefinedPlaceholders->at(i) == currentWord)
+                            if (undefinedNonTerminals->at(i) == currentWord)
                             {
                                 currentFirstWordNeedsToBeDefined = true;
                             }
                         }
                         if (!currentFirstWordNeedsToBeDefined)
                         {
-                            cout << "Error: Current placeholder, " << currentWord << ", has no prior use and does not need to be defined." << endl;
+                            cout << "Error: Current non-terminal, " << currentWord << ", has no prior use and does not need to be defined." << endl;
 
-                            clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                            clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                             return -2;
                         }
                     }
@@ -108,23 +108,23 @@ int LexerLexer::lexLanguageSpecifications()
                 }
                 if (wordIndex == 1)
                 {
-                    if (currentWord != placeholderExpansionSymbol)
+                    if (currentWord != nonTerminalExpansionSymbol)
                     {
-                        cout << "Error: Language Specifications must contain a placeholder expansion symbol " << placeholderExpansionSymbol << " after the initial token placeholder in a line." << endl;
+                        cout << "Error: Language Specifications must contain a non-terminal expansion symbol " << nonTerminalExpansionSymbol << " after the initial non-terminal in a line." << endl;
 
-                        clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                        clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                         return -3;
                     }
                 }
                 else if (wordIndex > 1)
                 {
-                    if (isPlaceholder(currentWord))
+                    if (isNonTerminal(currentWord))
                     {
-                        addIfDoesNotContain(undefinedPlaceholders, currentWord);
+                        addIfDoesNotContain(undefinedNonTerminals, currentWord);
                     }
-                    else if (isToken(currentWord))
+                    else if (isTerminal(currentWord))
                     {
-                        addIfDoesNotContain(undefinedTokens, currentWord);
+                        addIfDoesNotContain(undefinedTerminals, currentWord);
                     }
                     else
                     {
@@ -132,24 +132,24 @@ int LexerLexer::lexLanguageSpecifications()
                         {
                             if (wordIndex == 2)
                             {
-                                cout << "Error: " << orSymbol << " can only be used in a token or token placeholder formula after a token or token placeholder." << endl;
+                                cout << "Error: " << orSymbol << " can only be used in a terminal or non-terminal production rule after a terminal or non-terminal." << endl;
 
-                                clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                                clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                                 return -4;
                             }
                             if (prevWord == orSymbol)
                             {
-                                cout << "Error: a token or token placeholder must come after the " << orSymbol << " symbol." << endl;
+                                cout << "Error: a terminal or non-terminal must come after the " << orSymbol << " symbol." << endl;
 
-                                clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                                clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                                 return -5;
                             }
                         }
                         else
                         {
-                            cout << "Error: " << currentWord << " is not a token or token placeholder." << endl;
+                            cout << "Error: " << currentWord << " is not a terminal or non-terminal." << endl;
 
-                            clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                            clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                             return -6;
                         }
                     }
@@ -162,21 +162,21 @@ int LexerLexer::lexLanguageSpecifications()
                 currentWord = "";
             }
 
-            // erase placeholder that was just defined from undefined placeholders list
-            for (int i = 0; i < undefinedPlaceholders->size(); i++)
+            // erase non-terminal that was just defined from undefined non-terminals list
+            for (int i = 0; i < undefinedNonTerminals->size(); i++)
             {
-                if (undefinedPlaceholders->at(i) == currentFirstWord)
+                if (undefinedNonTerminals->at(i) == currentFirstWord)
                 {
-                    undefinedPlaceholders->erase(undefinedPlaceholders->begin() + i);
+                    undefinedNonTerminals->erase(undefinedNonTerminals->begin() + i);
                 }
             }
 
-            // add placeholder that was just defined to defined placeholders list
-            if (!addIfDoesNotContain(definedPlaceholders, currentFirstWord))
+            // add non-terminal that was just defined to defined non-terminal list
+            if (!addIfDoesNotContain(definedNonTerminals, currentFirstWord))
             {
-                cout << "Error: Defined placeholder " << currentFirstWord << ", which was previously defined." << endl;
+                cout << "Error: Defined non-terminal " << currentFirstWord << ", which was previously defined." << endl;
 
-                clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                 return -7;
             }
 
@@ -186,14 +186,14 @@ int LexerLexer::lexLanguageSpecifications()
 
     if (nonWhitespaceLineIndex == 0)
     {
-        // first word in Language Specifications was not a token placeholder
-        cout << "Error: Language Specifications must contain a token placeholder as a first word." << endl;
+        // first word in Language Specifications was not a non-terminal
+        cout << "Error: Language Specifications must contain a non-terminal as a first word." << endl;
 
-        clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+        clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
         return -8;
     }
 
-    // parse token value specifications
+    // parse terminal value specifications
     do
     {
         currentFirstWordNeedsToBeDefined = false;
@@ -212,19 +212,19 @@ int LexerLexer::lexLanguageSpecifications()
             {
                 if (wordIndex == 0)
                 {
-                    // Determine if this placeholder is on the undefined placeholders list
-                    for (int i = 0; i < undefinedTokens->size(); i++)
+                    // Determine if this terminal is on the undefined terminals list
+                    for (int i = 0; i < undefinedTerminals->size(); i++)
                     {
-                        if (undefinedTokens->at(i) == currentWord)
+                        if (undefinedTerminals->at(i) == currentWord)
                         {
                             currentFirstWordNeedsToBeDefined = true;
                         }
                     }
                     if (!currentFirstWordNeedsToBeDefined)
                     {
-                        cout << "Error: Current token, " << currentWord << ", has no prior use and does not need to be defined." << endl;
+                        cout << "Error: Current terminal, " << currentWord << ", has no prior use and does not need to be defined." << endl;
 
-                        clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                        clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                         return -9;
                     }
 
@@ -232,11 +232,11 @@ int LexerLexer::lexLanguageSpecifications()
                 }
                 if (wordIndex == 1)
                 {
-                    if (currentWord != tokenIDAssignmentSymbol)
+                    if (currentWord != terminalValueAssignmentSymbol)
                     {
-                        cout << "Error: Language Specifications must use an equals sign (=) to assign a token ID." << endl;
+                        cout << "Error: Language Specifications must use an equals sign (=) to assign a value to a terminal." << endl;
 
-                        clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                        clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                         return -10;
                     }
                 }
@@ -244,17 +244,17 @@ int LexerLexer::lexLanguageSpecifications()
                 {
                     if (currentWord.at(0) != '\"' || currentWord.at(currentWord.length() - 1) != '\"')
                     {
-                        cout << "Error: Strings representing tokens must be listed in double quotes (\")." << endl;
+                        cout << "Error: values assigned to terminals must be listed in double quotes (\")." << endl;
 
-                        clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                        clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                         return -11;
                     }
                 }
                 else if (wordIndex == 3)
                 {
-                    cout << "Error: Token Definitions should take the format of [TokenID] = \"String Representing Token\"." << endl;
+                    cout << "Error: Terminal Definitions should take the format of [Terminal_ID] = \"Value\"." << endl;
 
-                    clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                    clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                     return -11;
                     // TODO: Need to THROW errors and make sure memory is cleared in the case of errors.
                 }
@@ -265,57 +265,57 @@ int LexerLexer::lexLanguageSpecifications()
                 currentWord = "";
             }
 
-            // erase token that was just defined from undefined tokens list
-            for (int i = 0; i < undefinedTokens->size(); i++)
+            // erase terminal that was just defined from undefined terminals list
+            for (int i = 0; i < undefinedTerminals->size(); i++)
             {
-                if (undefinedTokens->at(i) == currentFirstWord)
+                if (undefinedTerminals->at(i) == currentFirstWord)
                 {
-                    undefinedTokens->erase(undefinedTokens->begin() + i);
+                    undefinedTerminals->erase(undefinedTerminals->begin() + i);
                 }
             }
 
-            // add token that was just defined to defined tokens list
-            if (!addIfDoesNotContain(definedTokens, currentFirstWord))
+            // add terminal that was just defined to defined terminal list
+            if (!addIfDoesNotContain(definedTerminals, currentFirstWord))
             {
-                cout << "Error: Defined placeholder " << currentFirstWord << ", which was previously defined." << endl;
+                cout << "Error: Defined non-terminal " << currentFirstWord << ", which was previously defined." << endl;
 
-                clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+                clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
                 return -12;
             }
 
             currentFirstWord = "";
         }
-    } while (getline(fs, currentLine) && (isToken(currentLine.substr(0, getIndexEndFirstWord(currentLine))) || containsNothing(currentLine)));
+    } while (getline(fs, currentLine) && (isTerminal(currentLine.substr(0, getIndexEndFirstWord(currentLine))) || containsNothing(currentLine)));
 
-    if (undefinedPlaceholders->size() > 0)
+    if (undefinedNonTerminals->size() > 0)
     {
-        cout << "Error: Lexer Got Last Token Definition and Found Undefined Token Placeholders: " << endl;
+        cout << "Error: Finished Lexing Language Specifications After Non-Terminal Definitions and Found Undefined Non-Terminals: " << endl;
 
-        for (int i = 0; i < undefinedPlaceholders->size(); i++)
+        for (int i = 0; i < undefinedNonTerminals->size(); i++)
         {
-            cout << "	" << undefinedPlaceholders->at(i) << endl;
+            cout << "	" << undefinedNonTerminals->at(i) << endl;
         }
 
-        clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+        clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
         return -13;
     }
-    if (undefinedTokens->size() > 0)
+    if (undefinedTerminals->size() > 0)
     {
-        cout << "Error: Undefined Tokens: " << endl;
+        cout << "Error: Undefined Terminals: " << endl;
 
-        for (int i = 0; i < undefinedTokens->size(); i++)
+        for (int i = 0; i < undefinedTerminals->size(); i++)
         {
-            cout << "	" << undefinedTokens->at(i) << endl;
+            cout << "	" << undefinedTerminals->at(i) << endl;
         }
 
-        clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+        clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
         return -14;
     }
 
-    testPrintVector(definedPlaceholders, "defined placeholders");
-    testPrintVector(definedTokens, "defined tokens");
+    testPrintVector(definedNonTerminals, "defined non-terminals");
+    testPrintVector(definedTerminals, "defined terminals");
 
-    clearLexLanguageSpecificationsMemory(undefinedPlaceholders, undefinedTokens, definedPlaceholders, definedTokens);
+    clearLexLanguageSpecificationsMemory(undefinedNonTerminals, undefinedTerminals, definedNonTerminals, definedTerminals);
     
     return 0;
 }

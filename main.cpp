@@ -8,11 +8,11 @@ int main()
 {
 	// Language Specifications Compilation Settings
 	const string OR_SYMBOL = "||";
-	const string PLACEHOLDER_EXPANSION_SYMBOL = "->";
-	const string TOKEN_ID_ASSIGNMENT_SYMBOL = "=";
+	const string NON_TERMINAL_EXPANSION_SYMBOL = "->";
+	const string TERMINAL_ID_ASSIGNMENT_SYMBOL = "=";
 
 	// Create Lexer Lexer
-	LexerLexer languageSpecificationsLexer(OR_SYMBOL, PLACEHOLDER_EXPANSION_SYMBOL, TOKEN_ID_ASSIGNMENT_SYMBOL);
+	LexerLexer languageSpecificationsLexer(OR_SYMBOL, NON_TERMINAL_EXPANSION_SYMBOL, TERMINAL_ID_ASSIGNMENT_SYMBOL);
 
 	// Lex Language Specifications
 	if (!languageSpecificationsLexer.lexLanguageSpecifications())
